@@ -9,7 +9,7 @@ function Book(title, author, isbn){
 // UI Constructor (Functionality)
 function UI(){} //Empty function
 
-// Add Book to List
+// Add Book to List Method
 UI.prototype.addBookToList = function(book){
     const list = document.getElementById('book-list');
     // Create tr element
@@ -25,6 +25,34 @@ UI.prototype.addBookToList = function(book){
     list.appendChild(row);
 
     console.log(row);
+}
+
+// Error Method
+UI.prototype.showAlert = function(message, className){
+    //Create div
+    const div = document.createElement('div');
+    // Add classes
+    div.className = `alert ${className}`;
+    // Add text
+    div.appendChild(document.createTextNode(message));
+    // Get parent and insert into DOM
+    const container = document.querySelector('.container');
+    // Must load element you want to insert before to use 'insertBEfore' method
+    const form = document.querySelector('#book-form');
+    // Insert
+    container.insertBefore(div, form);
+    // Dissapear Alert after 3s
+    setTimeout(function(){
+        document.querySelector('.alert').remove();
+    }, 3000);
+
+}
+
+// Delete Book Method
+UI.prototype.deleteBook = function(target){
+    if(target.className === 'delete'){
+        target.parentElement.parentElement.remove();
+    }
 }
 
 // Clear Fields
@@ -49,12 +77,36 @@ function(e){
     // Instantiate UI
     const ui = new UI();
 
-    // Add Book to List
-    ui.addBookToList(book);
+    // Validate
 
-    // Clear Field
+    if(title === '' || author === '' || isbn === ''){
+        // Error Alert
+        ui.showAlert('Please fill in all fields', 'error');
+    } else {
+        // Add Book to List
+        ui.addBookToList(book);
 
-    ui.clearFields();
+        // Show success alert
+        ui.showAlert('Book Added', 'success')
+
+        // Clear Fields
+
+        ui.clearFields();
+    }
+
+    e.preventDefault();
+})
+
+// Listen for delete
+
+document.getElementById('book-list').addEventListener('click', function(e){
+    // Instantiate UI
+    const ui = new UI();
+
+    ui.deleteBook(e.target);
+
+    //Show message
+    ui.showAlert('Book deleted', 'success');
 
     e.preventDefault();
 })
